@@ -1,0 +1,62 @@
+CREATE TABLE CLIENTS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    address VARCHAR(255),
+    phone_number VARCHAR(20),
+    email VARCHAR(255) UNIQUE,
+    is_vip BOOLEAN DEFAULT FALSE,
+    discount_rate DOUBLE DEFAULT 0.0
+);
+
+
+CREATE TABLE CAR_SPECS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    body_type VARCHAR(50),
+    fuel_type VARCHAR(50),
+    engine_capacity DOUBLE,
+    seat_count INT,
+    gearbox VARCHAR(50),
+    drivetrain VARCHAR(50)
+);
+
+CREATE TABLE CARS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    brand VARCHAR(100) NOT NULL,
+    model VARCHAR(100) NOT NULL,
+    year INT,
+    price_per_day DOUBLE NOT NULL,
+    car_specs_id INT,
+    FOREIGN KEY (car_specs_id) REFERENCES CAR_SPECS(id)
+);
+
+CREATE TABLE RESERVATIONS (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    client_id INT NOT NULL,
+    car_id INT NOT NULL,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    total_amount DOUBLE,
+    status VARCHAR(50) DEFAULT 'Pending',
+    FOREIGN KEY (client_id) REFERENCES CLIENTS(id),
+    FOREIGN KEY (car_id) REFERENCES CARS(id),
+    CONSTRAINT chk_end_date_after_start_date CHECK (end_date >= start_date)
+);
+
+CREATE TABLE ADDITIONAL_SERVICES (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    daily_rate DOUBLE NOT NULL,
+    service_type VARCHAR(100)
+);
+
+CREATE TABLE RESERVATION_SERVICES (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    reservation_id INT NOT NULL,
+    service_id INT NOT NULL,additional_services
+    nr_days INT DEFAULT 1,
+    unit_price DOUBLE NOT NULL,
+    FOREIGN KEY (reservation_id) REFERENCES RESERVATIONS(id),
+    FOREIGN KEY (service_id) REFERENCES ADDITIONAL_SERVICES(id),
+    UNIQUE (reservation_id, service_id)
+);
